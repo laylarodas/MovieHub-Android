@@ -1,19 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<!--
+    activity_main.xml - Layout principal de la app
+    
+    ¿QUÉ CONTIENE?
+    - RecyclerView: Muestra la lista/grid de películas
+    - ProgressBar: Indicador de carga (mientras se descargan películas)
+    
+    ESTRUCTURA:
+    - FrameLayout: Permite superponer vistas (RecyclerView + ProgressBar)
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:colorBackground"
     tools:context=".MainActivity">
 
-    <TextView
+    <!--
+        RecyclerView: Contenedor de la lista de películas
+        
+        ATRIBUTOS:
+        - id: Para acceder desde MainActivity
+        - match_parent: Ocupa toda la pantalla
+        - padding: Espacio en los bordes
+        - clipToPadding="false": El padding no afecta al scroll
+    -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_movies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="4dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/item_movie" />
+
+    <!--
+        ProgressBar: Círculo de carga
+        
+        ¿CUÁNDO SE VE?
+        - Cuando isLoading = true (cargando películas)
+        - Se oculta cuando isLoading = false
+        
+        ATRIBUTOS:
+        - layout_gravity="center": Centrado en pantalla
+        - visibility="gone": Invisible por defecto (MainActivity lo controla)
+        - indeterminate="true": Animación continua (no tiene progreso específico)
+    -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:indeterminate="true"
+        tools:visibility="visible" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

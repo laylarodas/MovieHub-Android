@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    item_movie.xml - Layout de cada película individual
+    
+    ¿QUÉ ES ESTO?
+    - Define cómo se ve UNA película en la lista
+    - Se repetirá para cada película (reciclado por RecyclerView)
+    
+    ESTRUCTURA:
+    - CardView: Contenedor con sombra y bordes redondeados
+    - ImageView: Poster de la película
+    - TextView: Título de la película
+    - TextView: Rating (calificación)
+-->
+
+<com.google.android.material.card.MaterialCardView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
+    
+    <!--
+        LinearLayout: Organiza los elementos verticalmente
+        orientation="vertical" = uno debajo del otro
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <!--
+            ImageView: Muestra el poster de la película
+            
+            ATRIBUTOS IMPORTANTES:
+            - scaleType="centerCrop": La imagen llena todo el espacio (crop si es necesario)
+            - layout_height="280dp": Altura fija para todos los posters
+            - tools:src: Solo para preview en Android Studio (no afecta app real)
+        -->
+        <ImageView
+            android:id="@+id/iv_poster"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name"
+            tools:src="@mipmap/ic_launcher" />
+        
+        <!--
+            LinearLayout interno: Para título y rating
+            Padding de 8dp en todos lados para espacio
+        -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+            
+            <!--
+                TextView: Título de la película
+                
+                ATRIBUTOS:
+                - textStyle="bold": Texto en negrita
+                - textSize="16sp": Tamaño de fuente (sp = scale-independent pixels)
+                - maxLines="2": Máximo 2 líneas
+                - ellipsize="end": Si es muy largo, pone "..." al final
+            -->
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="?android:textColorPrimary"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Dune: Part Two" />
+            
+            <!--
+                TextView: Rating (calificación)
+                
+                layout_marginTop="4dp": Pequeño espacio arriba
+                drawableStart: Ícono de estrella al inicio (lo agregaremos después)
+                drawablePadding: Espacio entre ícono y texto
+            -->
+            <TextView
+                android:id="@+id/tv_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                android:textColor="?android:textColorSecondary"
+                tools:text="8.5" />
+            
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+</com.google.android.material.card.MaterialCardView>
+
