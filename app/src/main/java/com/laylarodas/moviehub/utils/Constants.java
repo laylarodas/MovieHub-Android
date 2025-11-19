@@ -8,7 +8,7 @@ public class Constants {
     
     // ⚠️ IMPORTANTE: Debes obtener tu propia API Key en https://www.themoviedb.org/settings/api
     
-    public static final String API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMjkyZWJhMWYwZmIwOTlhYjNlMWJhNGQ5N2Q2ODVhNyIsIm5iZiI6MTc2MzQ2MTk5My44NzMsInN1YiI6IjY5MWM0YjY5YWRmYjVkYTRkNDE3NjM5OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.GVvNQuKCOSgDRJSEL6ZFF0eGD9UG4VU5D3u9bmD5GeM";
+    public static final String API_KEY = "f292eba1f0fb099ab3e1ba4d97d685a7";
     
     // URL base de la API de TMDB (The Movie Database)
     // Todas las peticiones empezarán con esta URL
