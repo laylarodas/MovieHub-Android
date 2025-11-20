@@ -213,18 +213,60 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnMo
      * ¿QUIÉN LO LLAMA?
      * - MovieAdapter cuando detecta un click
      * 
-     * ¿QUÉ HACER AQUÍ?
-     * - Abrir pantalla de detalles (Fase 5)
-     * - Por ahora solo mostramos un Toast
+     * ¿QUÉ HACE?
+     * - Crea un Intent con los datos de la película
+     * - Abre DetailActivity pasando los datos
+     * 
+     * FLUJO:
+     * User clickea → Adapter llama onMovieClick() → Crea Intent → Abre DetailActivity
      * 
      * @param movie La película clickeada
      */
     @Override
     public void onMovieClick(Movie movie) {
-        // TODO: En Fase 5 abriremos DetailActivity
-        // Por ahora solo mostramos un Toast
-        String message = "Clicked: " + movie.getTitle();
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        
+        // PASO 1: Crear Intent para abrir DetailActivity
+        // Intent(contexto, clase_destino)
+        android.content.Intent intent = new android.content.Intent(this, 
+                com.laylarodas.moviehub.ui.DetailActivity.class);
+        
+        // PASO 2: Agregar datos al Intent usando putExtra()
+        // putExtra(key, value) - Como poner cosas en un sobre 📮
+        
+        // Agregamos cada campo de la película
+        intent.putExtra(com.laylarodas.moviehub.ui.DetailActivity.EXTRA_MOVIE_ID, 
+                movie.getId());
+        intent.putExtra(com.laylarodas.moviehub.ui.DetailActivity.EXTRA_MOVIE_TITLE, 
+                movie.getTitle());
+        intent.putExtra(com.laylarodas.moviehub.ui.DetailActivity.EXTRA_MOVIE_POSTER, 
+                movie.getPosterPath());
+        intent.putExtra(com.laylarodas.moviehub.ui.DetailActivity.EXTRA_MOVIE_BACKDROP, 
+                movie.getBackdropPath());
+        intent.putExtra(com.laylarodas.moviehub.ui.DetailActivity.EXTRA_MOVIE_OVERVIEW, 
+                movie.getOverview());
+        intent.putExtra(com.laylarodas.moviehub.ui.DetailActivity.EXTRA_MOVIE_RATING, 
+                movie.getVoteAverage());
+        intent.putExtra(com.laylarodas.moviehub.ui.DetailActivity.EXTRA_MOVIE_RELEASE_DATE, 
+                movie.getReleaseDate());
+        
+        // PASO 3: Iniciar DetailActivity
+        // Esto abre la nueva pantalla
+        startActivity(intent);
+        
+        /**
+         * ¿QUÉ PASA DESPUÉS?
+         * 1. Android pausa MainActivity
+         * 2. Android crea DetailActivity
+         * 3. DetailActivity.onCreate() se ejecuta
+         * 4. DetailActivity obtiene los datos del Intent
+         * 5. DetailActivity muestra los datos
+         * 6. Usuario ve los detalles ✅
+         * 
+         * Cuando usuario presiona BACK:
+         * 1. DetailActivity se destruye
+         * 2. MainActivity se reanuda
+         * 3. Usuario vuelve a la lista
+         */
     }
     
     /**
