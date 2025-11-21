@@ -6,9 +6,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.laylarodas.moviehub.model.Movie;
 import com.laylarodas.moviehub.ui.MovieAdapter;
@@ -38,12 +40,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnMo
     // ==================== VARIABLES DE UI ====================
     
     /**
+     * Toolbar: Barra superior con título
+     */
+    private Toolbar toolbar;
+    
+    /**
+     * SwipeRefreshLayout: Permite refrescar deslizando hacia abajo
+     */
+    private SwipeRefreshLayout swipeRefreshLayout;
+    
+    /**
      * RecyclerView: Muestra la lista/grid de películas
      */
     private RecyclerView recyclerView;
     
     /**
-     * ProgressBar: Indicador de carga (círculo girando)
+     * ProgressBar: Indicador de carga inicial
      */
     private ProgressBar progressBar;
     
@@ -65,12 +77,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnMo
     /**
      * onCreate - Se llama cuando la Activity se crea
      * 
-     * FLUJO:
+     * FLUJO ACTUALIZADO:
      * 1. Inicializar vistas (findViewById)
-     * 2. Configurar RecyclerView
-     * 3. Obtener ViewModel
-     * 4. Observar LiveData
-     * 5. Cargar películas
+     * 2. Configurar Toolbar
+     * 3. Configurar SwipeRefreshLayout
+     * 4. Configurar RecyclerView
+     * 5. Obtener ViewModel
+     * 6. Observar LiveData
+     * 7. Cargar películas
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,16 +94,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnMo
         // PASO 1: Inicializar las vistas
         initViews();
         
-        // PASO 2: Configurar el RecyclerView
+        // PASO 2: Configurar Toolbar
+        setupToolbar();
+        
+        // PASO 3: Configurar SwipeRefreshLayout
+        setupSwipeRefresh();
+        
+        // PASO 4: Configurar el RecyclerView
         setupRecyclerView();
         
-        // PASO 3: Obtener el ViewModel
+        // PASO 5: Obtener el ViewModel
         setupViewModel();
         
-        // PASO 4: Observar los LiveData del ViewModel
+        // PASO 6: Observar los LiveData del ViewModel
         observeViewModel();
         
-        // PASO 5: Cargar las películas
+        // PASO 7: Cargar las películas
         // Solo cargamos si es la primera vez (savedInstanceState == null)
         // Si hay rotación, el ViewModel ya tiene los datos
         if (savedInstanceState == null) {
@@ -105,8 +125,69 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnMo
      * findViewById busca la vista por su ID en el layout XML.
      */
     private void initViews() {
+        toolbar = findViewById(R.id.toolbar);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         recyclerView = findViewById(R.id.rv_movies);
         progressBar = findViewById(R.id.progress_bar);
+    }
+    
+    /**
+     * Configura la Toolbar como ActionBar.
+     * 
+     * ¿QUÉ ES setSupportActionBar()?
+     * - Le dice a Android que use esta Toolbar como barra superior
+     * - Ahora la Toolbar funciona como ActionBar
+     * - Puedes agregar menús, título, botones, etc.
+     */
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
+        
+        // Configurar título (opcional, ya está en XML)
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Popular Movies");
+        }
+    }
+    
+    /**
+     * Configura el SwipeRefreshLayout.
+     * 
+     * ¿QUÉ HACE?
+     * - Define los colores del círculo de refresh
+     * - Establece qué hacer cuando el usuario desliza hacia abajo
+     */
+    private void setupSwipeRefresh() {
+        
+        // PASO 1: Configurar colores del círculo de refresh
+        // setColorSchemeResources: Define los colores que rotarán
+        swipeRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light
+        );
+        
+        // PASO 2: Definir qué hacer cuando se refresca
+        // setOnRefreshListener: Se ejecuta cuando usuario desliza hacia abajo
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            /**
+             * onRefresh - Se llama cuando el usuario desliza hacia abajo
+             * 
+             * FLUJO:
+             * 1. Usuario desliza ↓
+             * 2. Aparece círculo girando
+             * 3. Se ejecuta este código
+             * 4. Recargamos películas del ViewModel
+             * 5. Cuando termina, ocultamos el círculo
+             */
+            @Override
+            public void onRefresh() {
+                // Recargar películas desde la API
+                viewModel.loadPopularMovies();
+                
+                // NOTA: El círculo se ocultará automáticamente cuando
+                // el observer de isLoading reciba false
+            }
+        });
     }
     
     /**
@@ -180,16 +261,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.OnMo
         });
         
         // OBSERVER 2: Observar estado de carga
-        // Muestra/oculta el ProgressBar según el estado
+        // Muestra/oculta el ProgressBar y SwipeRefresh según el estado
         viewModel.getIsLoading().observe(this, isLoading -> {
             // isLoading es true (cargando) o false (no cargando)
             
             if (isLoading != null && isLoading) {
-                // Está cargando: MOSTRAR ProgressBar
-                progressBar.setVisibility(View.VISIBLE);
+                // Está cargando
+                
+                // Solo mostrar ProgressBar si NO está haciendo refresh
+                // (para evitar mostrar ambos a la vez)
+                if (!swipeRefreshLayout.isRefreshing()) {
+                    progressBar.setVisibility(View.VISIBLE);
+                }
             } else {
-                // No está cargando: OCULTAR ProgressBar
+                // No está cargando: OCULTAR ambos
                 progressBar.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing(false);  // Ocultar círculo de refresh
             }
         });
         

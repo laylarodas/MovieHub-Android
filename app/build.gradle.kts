@@ -52,6 +52,12 @@ dependencies {
     // RecyclerView - Para mostrar listas
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     
+    // SwipeRefreshLayout - Para pull to refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    
+    // CoordinatorLayout - Para Material Design behaviors
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

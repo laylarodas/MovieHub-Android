@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    activity_main.xml - Layout principal de la app
+    activity_main.xml - Layout principal MEJORADO
     
-    ¿QUÉ CONTIENE?
-    - RecyclerView: Muestra la lista/grid de películas
-    - ProgressBar: Indicador de carga (mientras se descargan películas)
-    
-    ESTRUCTURA:
-    - FrameLayout: Permite superponer vistas (RecyclerView + ProgressBar)
+    NUEVA ESTRUCTURA:
+    - CoordinatorLayout: Layout raíz para Material Design
+    - AppBarLayout: Contenedor de la Toolbar
+    - Toolbar: Barra superior con título
+    - SwipeRefreshLayout: Permite refrescar deslizando
+    - RecyclerView: Lista de películas
+    - ProgressBar: Loading inicial
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,41 +20,95 @@
     tools:context=".MainActivity">
 
     <!--
-        RecyclerView: Contenedor de la lista de películas
+        SECCIÓN 1: APP BAR (Barra superior)
         
-        ATRIBUTOS:
-        - id: Para acceder desde MainActivity
-        - match_parent: Ocupa toda la pantalla
-        - padding: Espacio en los bordes
-        - clipToPadding="false": El padding no afecta al scroll
+        AppBarLayout: Contenedor especial para la Toolbar
+        - elevation: Sombra debajo de la toolbar
+        - theme: Tema oscuro para la toolbar
     -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_movies"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="4dp"
-        android:clipToPadding="false"
-        tools:listitem="@layout/item_movie" />
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!--
+            MaterialToolbar: Barra superior moderna
+            
+            ATRIBUTOS:
+            - popupTheme: Tema para menús que se abren desde la toolbar
+            - elevation: Sombra (4dp es el estándar)
+        -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="@string/app_name"
+            app:titleTextColor="@android:color/white" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <!--
-        ProgressBar: Círculo de carga
+        SECCIÓN 2: CONTENIDO PRINCIPAL
         
-        ¿CUÁNDO SE VE?
-        - Cuando isLoading = true (cargando películas)
-        - Se oculta cuando isLoading = false
+        FrameLayout: Permite superponer SwipeRefreshLayout + ProgressBar
         
-        ATRIBUTOS:
-        - layout_gravity="center": Centrado en pantalla
-        - visibility="gone": Invisible por defecto (MainActivity lo controla)
-        - indeterminate="true": Animación continua (no tiene progreso específico)
+        app:layout_behavior: Le dice al CoordinatorLayout que este contenido
+        debe estar DEBAJO de la AppBarLayout (importante para Material Design)
     -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:indeterminate="true"
-        tools:visibility="visible" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-</FrameLayout>
+        <!--
+            SwipeRefreshLayout: Habilita Pull to Refresh
+            
+            ¿QUÉ HACE?
+            - Detecta cuando el usuario desliza hacia abajo
+            - Muestra un círculo girando
+            - Ejecuta el código de refresh que configuremos
+            
+            COLORES:
+            - colorScheme: Colores del círculo de refresh
+        -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!--
+                RecyclerView: Lista de películas
+                (Ahora está DENTRO del SwipeRefreshLayout)
+            -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_movies"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="4dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/item_movie" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!--
+            ProgressBar: Loading inicial
+            
+            DIFERENCIA con SwipeRefreshLayout:
+            - ProgressBar: Primera carga (pantalla vacía)
+            - SwipeRefresh: Recargar cuando ya hay datos
+        -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:indeterminate="true"
+            tools:visibility="visible" />
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
