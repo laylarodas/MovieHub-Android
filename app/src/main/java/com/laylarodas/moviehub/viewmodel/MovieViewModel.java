@@ -116,13 +116,22 @@ public class MovieViewModel extends ViewModel {
     // ==================== CONSTRUCTOR ====================
     
     /**
-     * Constructor: Inicializa el Repository.
+     * Constructor por defecto. Inicializa el Repository real.
      * 
-     * NOTA: En apps más grandes usarías Dependency Injection (Dagger/Hilt)
-     * para inyectar el Repository. Por ahora, lo creamos aquí directamente.
+     * NOTA: Idealmente usarías Dependency Injection (Hilt/Dagger) para inyectar el Repository.
+     * Para facilitar los tests unitarios, proveemos también un constructor que recibe el Repository.
      */
     public MovieViewModel() {
-        this.repository = new MovieRepository();
+        this(new MovieRepository());
+    }
+
+    /**
+     * Constructor adicional para testing.
+     * 
+     * @param repository Repository a utilizar (puede ser falso para tests)
+     */
+    public MovieViewModel(MovieRepository repository) {
+        this.repository = repository;
     }
     
     // ==================== MÉTODOS PÚBLICOS ====================
@@ -142,6 +151,16 @@ public class MovieViewModel extends ViewModel {
      * La Activity solo observa los LiveData y reacciona a los cambios.
      */
     public void loadPopularMovies() {
+        // Asegurar que los LiveData estén inicializados
+        if (movies == null) {
+            getMovies();
+        }
+        if (isLoading == null) {
+            getIsLoading();
+        }
+        if (errorMessage == null) {
+            getErrorMessage();
+        }
         
         // PASO 1: Indicar que está cargando
         // Esto hace que la UI muestre un ProgressBar

@@ -59,6 +59,7 @@ dependencies {
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     
     testImplementation(libs.junit)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
